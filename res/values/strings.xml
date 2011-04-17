@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hello">Hello World!</string>
+    <string name="app_name">Budget Tracker</string>
+    <string name="bottomtext">Sum: </string>
+    <string name="addbudgetitem">Cost</string>
+    <string name="addbudgetcategory">Category</string>
+    <string name="buttonOk">OK</string>
+    <string name="buttonCancel">Cancel</string>
+</resources>
