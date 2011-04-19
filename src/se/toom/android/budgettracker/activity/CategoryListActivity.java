@@ -67,7 +67,6 @@ public class CategoryListActivity extends BudgetTrackerListActivity {
 			    					newItem.setMonth(budgetMonth);
 			    					newItem.setValue(Integer.parseInt(input.getText().toString()));
 				    				budgetTrackerDao.addBudgetItem(newItem);
-				    				categoriesArrayAdapter.notifyDataSetChanged();
 				    				populateArrayAdapter();
 			    				} catch(NumberFormatException e) {}
 			    			}
