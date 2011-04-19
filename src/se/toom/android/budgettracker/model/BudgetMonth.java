@@ -1,9 +1,12 @@
 package se.toom.android.budgettracker.model;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
-public class BudgetMonth {
+public class BudgetMonth implements Serializable {
+	
+	private static final long serialVersionUID = 8067358722677663148L;
 	
 	private int year;
 	private int month;

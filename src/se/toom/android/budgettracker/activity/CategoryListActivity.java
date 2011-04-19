@@ -24,8 +24,8 @@ public class CategoryListActivity extends BudgetTrackerListActivity {
 		super.onCreate(savedInstanceState);
 
 		final Context context = this;
-
-		categoriesArrayAdapter = new CategoryListArrayAdapter(this, budgetTrackerDao);
+		final BudgetMonth budgetMonth = (BudgetMonth) getIntent().getSerializableExtra(INTENT_EXTRA_CURRENT_MONTH); 
+		categoriesArrayAdapter = new CategoryListArrayAdapter(this, budgetTrackerDao, budgetMonth);
 		
 		populateArrayAdapter();
 		
@@ -47,7 +47,6 @@ public class CategoryListActivity extends BudgetTrackerListActivity {
 				    			BudgetCategory newCategory = new BudgetCategory(input.getText().toString());
 				    			budgetTrackerDao.addBudgetCategory(newCategory);
 				    			populateArrayAdapter();
-				    			notifySumUpdate();
 				    		}
 				    	}).setNegativeButton(R.string.buttonCancel, new DialogInterface.OnClickListener() {
 				    		public void onClick(DialogInterface dialog, int whichButton) {
@@ -65,12 +64,11 @@ public class CategoryListActivity extends BudgetTrackerListActivity {
 			    				try {
 			    					BudgetItem newItem = new BudgetItem();
 			    					newItem.setCategory(selectedItem);
-			    					newItem.setMonth((BudgetMonth) getContextAttribute(CONTEXT_CURRENT_MONTH));
+			    					newItem.setMonth(budgetMonth);
 			    					newItem.setValue(Integer.parseInt(input.getText().toString()));
 				    				budgetTrackerDao.addBudgetItem(newItem);
 				    				categoriesArrayAdapter.notifyDataSetChanged();
 				    				populateArrayAdapter();
-				    				notifySumUpdate();
 			    				} catch(NumberFormatException e) {}
 			    			}
 			    		}).setNegativeButton(R.string.buttonCancel, new DialogInterface.OnClickListener() {

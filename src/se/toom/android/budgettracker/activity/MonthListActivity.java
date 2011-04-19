@@ -16,35 +16,30 @@ public class MonthListActivity extends BudgetTrackerListActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-		final Context context = this;
 		
-		// Assert that the current month is available
-		budgetTrackerDao.addBudgetMonth(BudgetMonth.getCurrentMonth());
 		monthsArrayAdapter = new MonthListArrayAdapter(this, budgetTrackerDao);
-
-		populateArrayAdapter();
 		
 		setListAdapter(monthsArrayAdapter);
-		
-		registerSumUpdateNotification(this);
-		
+
+		final Context context = this;
 		getListView().setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
 				Intent categoryIntent = new Intent();
 				categoryIntent.setClass(context, CategoryListActivity.class);
-				
-				// Set the selected month in the shared context
-				putContextAttribute(CONTEXT_CURRENT_MONTH, parent.getItemAtPosition(pos));
-				
+				categoryIntent.putExtra(INTENT_EXTRA_CURRENT_MONTH, monthsArrayAdapter.getItem(pos));
 				startActivity(categoryIntent);
 			}
 		});		
 	}
 	
 	@Override
-	protected void onSumUpdate() {
+	protected void onResume() {
+		super.onResume();
+		
+		// Assert that the current month is available
+		budgetTrackerDao.addBudgetMonth(BudgetMonth.getCurrentMonth());
+		
 		populateArrayAdapter();
 	}
 	

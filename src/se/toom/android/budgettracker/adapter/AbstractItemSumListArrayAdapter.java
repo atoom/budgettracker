@@ -17,9 +17,8 @@ public abstract class AbstractItemSumListArrayAdapter<T> extends ArrayAdapter<T>
 	protected BudgetTrackerListActivity budgetTrackerListActivity;
 	protected BudgetTrackerDao budgetTrackerDao;
 	
-	public AbstractItemSumListArrayAdapter(BudgetTrackerListActivity budgetTrackerListActivity, BudgetTrackerDao budgetTrackerDao) {
-		super(budgetTrackerListActivity, R.layout.item_list_item_with_sum, new ArrayList<T>());
-		this.budgetTrackerListActivity = budgetTrackerListActivity;
+	public AbstractItemSumListArrayAdapter(Context context, BudgetTrackerDao budgetTrackerDao) {
+		super(context, R.layout.item_list_item_with_sum, new ArrayList<T>());
 		this.budgetTrackerDao = budgetTrackerDao;
 	}
 
