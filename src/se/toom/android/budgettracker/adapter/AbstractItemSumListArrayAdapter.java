@@ -14,7 +14,7 @@ import android.widget.TextView;
 
 public abstract class AbstractItemSumListArrayAdapter<T> extends ArrayAdapter<T> {
 	
-	protected BudgetTrackerListActivity budgetTrackerListActivity;
+	protected BudgetTrackerListActivity<T> budgetTrackerListActivity;
 	protected BudgetTrackerDao budgetTrackerDao;
 	
 	public AbstractItemSumListArrayAdapter(Context context, BudgetTrackerDao budgetTrackerDao) {

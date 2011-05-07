@@ -7,17 +7,17 @@ public class BudgetItem {
 	private int value;
 	private Date created;
 	private BudgetCategory category;
-	private BudgetMonth month;
+	private BudgetDay day;
 	
 	public BudgetItem() {}
 
 	public BudgetItem(long id, int value, Date created, BudgetCategory category,
-			BudgetMonth month) {
+			BudgetDay day) {
 		this.id = id;
 		this.value = value;
 		this.created = created;
 		this.category = category;
-		this.month = month;
+		this.day = day;
 	}
 
 	public long getId() {
@@ -52,11 +52,11 @@ public class BudgetItem {
 		this.category = category;
 	}
 
-	public BudgetMonth getMonth() {
-		return month;
+	public BudgetDay getDay() {
+		return day;
 	}
 
-	public void setMonth(BudgetMonth month) {
-		this.month = month;
+	public void setDay(BudgetDay day) {
+		this.day = day;
 	}
 }

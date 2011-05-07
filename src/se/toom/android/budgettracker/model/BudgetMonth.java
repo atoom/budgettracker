@@ -4,43 +4,49 @@ import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
+import se.toom.android.budgettracker.Constants;
+
 public class BudgetMonth implements Serializable {
 	
 	private static final long serialVersionUID = 8067358722677663148L;
 	
-	private int year;
-	private int month;
+	private static final SimpleDateFormat dateFormat = new SimpleDateFormat(Constants.DATE_FORMAT_YEARMONTH);
 	
-	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM");
-
-	public BudgetMonth(String budgetMonth) {
-		this.year = Integer.parseInt(budgetMonth.substring(0, 4));
-		this.month = Integer.parseInt(budgetMonth.substring(4));
-	}
+	protected BudgetDay day;
 	
-	public BudgetMonth(int year, int month) {
-		this.year = year;
-		this.month = month;
-	}
-
-	public int getYear() {
-		return year;
-	}
-
-	public int getMonth() {
-		return month;
+	public BudgetMonth(BudgetDay budgetDay) {
+		if(budgetDay == null) {
+			throw new IllegalArgumentException("BudgetDay cannot be null");
+		}
+		
+		this.day = budgetDay;
 	}
 	
 	@Override
 	public String toString() {
-		Calendar calendar = Calendar.getInstance();
-		calendar.set(Calendar.YEAR, year);
-		calendar.set(Calendar.MONTH, month);
-		return dateFormat.format(calendar.getTime());
+		return dateFormat.format(day.getDate());
 	}
 	
-	public static BudgetMonth getCurrentMonth() {
-		Calendar calendar = Calendar.getInstance();
-		return new BudgetMonth(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH));
+	@Override
+	public boolean equals(Object o) {
+		if(o instanceof BudgetMonth) {
+			return toString().equals(o.toString());
+		}
+
+		return super.equals(o);
+	}
+	
+	@Override
+	public int hashCode() {
+		return toString().hashCode();
+	}
+	
+	public static BudgetDay getLastDayOfMonth(BudgetMonth month) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(month.day.getDate());
+		cal.set(Calendar.DAY_OF_MONTH, 1);
+		cal.add(Calendar.MONTH, 1);
+		cal.add(Calendar.DAY_OF_MONTH, -1);
+		return new BudgetDay(cal.getTime());
 	}
 }

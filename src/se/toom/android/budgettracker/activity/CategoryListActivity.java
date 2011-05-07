@@ -1,8 +1,15 @@
 package se.toom.android.budgettracker.activity;
 
+import java.util.Date;
+import java.util.List;
+
 import se.toom.android.budgettracker.R;
-import se.toom.android.budgettracker.adapter.CategoryListArrayAdapter;
+import se.toom.android.budgettracker.adapter.AbstractCategoryListArrayAdapter;
+import se.toom.android.budgettracker.adapter.AbstractItemSumListArrayAdapter;
+import se.toom.android.budgettracker.adapter.DayCategoryListArrayAdapter;
+import se.toom.android.budgettracker.adapter.MonthCategoryListArrayAdapter;
 import se.toom.android.budgettracker.model.BudgetCategory;
+import se.toom.android.budgettracker.model.BudgetDay;
 import se.toom.android.budgettracker.model.BudgetItem;
 import se.toom.android.budgettracker.model.BudgetMonth;
 import android.app.AlertDialog;
@@ -15,21 +22,25 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
 
-public class CategoryListActivity extends BudgetTrackerListActivity {
+public class CategoryListActivity extends BudgetTrackerListActivity<BudgetCategory> {
 	
-	private CategoryListArrayAdapter categoriesArrayAdapter;
+	protected AbstractCategoryListArrayAdapter categoriesArrayAdapter;
+	protected BudgetDay budgetDay;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		final Context context = this;
-		final BudgetMonth budgetMonth = (BudgetMonth) getIntent().getSerializableExtra(INTENT_EXTRA_CURRENT_MONTH); 
-		categoriesArrayAdapter = new CategoryListArrayAdapter(this, budgetTrackerDao, budgetMonth);
 		
-		populateArrayAdapter();
-		
-		setListAdapter(categoriesArrayAdapter);
+		if(getIntent().hasExtra(INTENT_EXTRA_CURRENT_MONTH)) {
+			BudgetMonth budgetMonth = (BudgetMonth) getIntent().getSerializableExtra(INTENT_EXTRA_CURRENT_MONTH); 
+			budgetDay = getDayForMonth(budgetMonth);
+		} else if(getIntent().hasExtra(INTENT_EXTRA_CURRENT_DAY)) {
+			budgetDay = (BudgetDay) getIntent().getSerializableExtra(INTENT_EXTRA_CURRENT_DAY);
+		} else {
+			throw new IllegalArgumentException("Cannot start activity without extra parameters");
+		}
 		
 		getListView().setOnItemClickListener(new OnItemClickListener() {
 			@Override
@@ -46,7 +57,7 @@ public class CategoryListActivity extends BudgetTrackerListActivity {
 				    		public void onClick(DialogInterface dialog, int whichButton) {
 				    			BudgetCategory newCategory = new BudgetCategory(input.getText().toString());
 				    			budgetTrackerDao.addBudgetCategory(newCategory);
-				    			populateArrayAdapter();
+				    			populateItemSumListArrayAdapter();
 				    		}
 				    	}).setNegativeButton(R.string.buttonCancel, new DialogInterface.OnClickListener() {
 				    		public void onClick(DialogInterface dialog, int whichButton) {
@@ -64,10 +75,10 @@ public class CategoryListActivity extends BudgetTrackerListActivity {
 			    				try {
 			    					BudgetItem newItem = new BudgetItem();
 			    					newItem.setCategory(selectedItem);
-			    					newItem.setMonth(budgetMonth);
+			    					newItem.setDay(budgetDay);
 			    					newItem.setValue(Integer.parseInt(input.getText().toString()));
 				    				budgetTrackerDao.addBudgetItem(newItem);
-				    				populateArrayAdapter();
+				    				populateItemSumListArrayAdapter();
 			    				} catch(NumberFormatException e) {}
 			    			}
 			    		}).setNegativeButton(R.string.buttonCancel, new DialogInterface.OnClickListener() {
@@ -80,11 +91,41 @@ public class CategoryListActivity extends BudgetTrackerListActivity {
 		});
 	}
 	
-	protected void populateArrayAdapter() {
-		categoriesArrayAdapter.clear();
-		categoriesArrayAdapter.add(BudgetCategory.NEW);
-		for(BudgetCategory category : budgetTrackerDao.getBudgetCategories()) {
-			categoriesArrayAdapter.add(category);
+	@Override
+	protected AbstractItemSumListArrayAdapter<BudgetCategory> createItemSumListArrayAdapter() {
+		if(getIntent().hasExtra(INTENT_EXTRA_CURRENT_MONTH)) {
+			return new MonthCategoryListArrayAdapter(this, budgetTrackerDao, 
+					(BudgetMonth) getIntent().getSerializableExtra(INTENT_EXTRA_CURRENT_MONTH));
+		} else if(getIntent().hasExtra(INTENT_EXTRA_CURRENT_DAY)) {
+			return new DayCategoryListArrayAdapter(this, budgetTrackerDao, 
+					(BudgetDay) getIntent().getSerializableExtra(INTENT_EXTRA_CURRENT_DAY));
+		} else {
+			throw new IllegalArgumentException("Cannot start activity without extra parameters");
+		}
+	}
+	
+	@Override
+	protected List<BudgetCategory> getItemsForArrayAdapter() {
+		List<BudgetCategory> result = budgetTrackerDao.getBudgetCategories();
+		result.add(0, BudgetCategory.NEW);
+		return result;
+	}
+
+	/**
+	 * Get the day for the supplied month. If the supplied month
+	 * match the current month the current date will be returned. In
+	 * other cases the last day of the supplied month will be returned.
+	 * 
+	 * @param month
+	 * @return
+	 */
+	protected BudgetDay getDayForMonth(BudgetMonth month) {
+		BudgetDay currentDay = new BudgetDay(new Date());
+		BudgetMonth currentMonth = new BudgetMonth(currentDay);
+		if(currentMonth.equals(month)) {
+			return currentDay;
+		} else {
+			return BudgetMonth.getLastDayOfMonth(month);
 		}
 	}
 }

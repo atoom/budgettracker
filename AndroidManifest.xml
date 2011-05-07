@@ -12,6 +12,7 @@
 			</intent-filter>
 		</activity>
 		<activity android:name=".activity.CategoryListActivity"></activity>
+		<activity android:name=".activity.DayListActivity"></activity>
 
 
 	</application>

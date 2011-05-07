@@ -2,17 +2,13 @@ package se.toom.android.budgettracker.adapter;
 
 import se.toom.android.budgettracker.dao.BudgetTrackerDao;
 import se.toom.android.budgettracker.model.BudgetCategory;
-import se.toom.android.budgettracker.model.BudgetMonth;
 import android.content.Context;
 import android.widget.TextView;
 
-public class CategoryListArrayAdapter extends AbstractItemSumListArrayAdapter<BudgetCategory> {
+public abstract class AbstractCategoryListArrayAdapter extends AbstractItemSumListArrayAdapter<BudgetCategory> {
 	
-	protected BudgetMonth budgetMonth;
-	
-	public CategoryListArrayAdapter(Context context, BudgetTrackerDao budgetTrackerDao, BudgetMonth budgetMonth) {
+	public AbstractCategoryListArrayAdapter(Context context, BudgetTrackerDao budgetTrackerDao) {
 		super(context, budgetTrackerDao);
-		this.budgetMonth = budgetMonth;
 	}
 
 	@Override
@@ -26,11 +22,9 @@ public class CategoryListArrayAdapter extends AbstractItemSumListArrayAdapter<Bu
 			bottomTextView.setVisibility(TextView.GONE);
 		} else {
 			bottomTextView.setVisibility(TextView.VISIBLE);
-			bottomTextView.setText(getSumString(budgetTrackerDao.getBudgetItemSum(budgetMonth, itemObject)));
+			bottomTextView.setText(getSumString(getCategorySum(itemObject)));
 		}
 	}
 	
-	public BudgetMonth getBudgetMonth() {
-		return budgetMonth;
-	}
+	protected abstract int getCategorySum(BudgetCategory itemObject);
 }
